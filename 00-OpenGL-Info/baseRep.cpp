@@ -14,6 +14,10 @@ GLuint vbo_object;
 GLuint vbo_color;
 GLuint ibo_object;
 
+GLuint vbo_object_1;
+GLuint vbo_color_1;
+GLuint ibo_object_1;
+
 GLuint program;
 GLint attribute_coord;
 
@@ -32,45 +36,76 @@ int screen_width = 800, screen_height = 800;
 
 GLfloat vertices[MAXV][3];
 GLushort triangles[MAXT][3];
+GLfloat vertices_1[MAXV][3];
+GLushort triangles_1[MAXT][3];
 
 float xmin=1e09, xmax=-1e09, ymin=1e09, ymax=-1e09, zmin=1e09, zmax=-1e09;
 
 int numVertices = 0;
 int numTriangles = 0;
 
-void read_file(const char* filename){
+int numVertices_1 = 0;
+int numTriangles_1 = 0;
+
+void read_file(const char* filename, int opcion){
     FILE* fp = fopen(filename, "rt");
     char buffer[100];
+	if (opcion==0){
+		//Leer formato
+		fscanf(fp, "%s", buffer);
+		int aux;
 
-    //Leer formato
-    fscanf(fp, "%s", buffer);
-    int aux;
+		//Leer #vertices, #triangulos, #aristas
+		fscanf(fp, "%d %d %d", &numVertices, &numTriangles, &aux);
+		
+		for(int i = 0; i < numVertices; i++){
+			fscanf(fp, "%f %f %f", &vertices[i][0], &vertices[i][1], &vertices[i][2]);
+			if(vertices[i][0] < xmin)	xmin = vertices[i][0];
+			if(vertices[i][0] > xmax)	xmax = vertices[i][0];
+			if(vertices[i][1] < ymin)	ymin = vertices[i][1];
+			if(vertices[i][1] > ymax)	ymax = vertices[i][1];
+			if(vertices[i][2] < zmin)	zmin = vertices[i][2];
+			if(vertices[i][2] > zmax)	zmax = vertices[i][2];
+		}
 
-    //Leer #vertices, #triangulos, #aristas
-    fscanf(fp, "%d %d %d", &numVertices, &numTriangles, &aux);
+		for(int i = 0; i < numTriangles; i++){
+			fscanf(fp, "%d %d %d %d", &aux, &triangles[i][0], &triangles[i][1], &triangles[i][2]);
+		}
 
-    for(int i = 0; i < numVertices; i++){
-        fscanf(fp, "%f %f %f", &vertices[i][0], &vertices[i][1], &vertices[i][2]);
-        if(vertices[i][0] < xmin)	xmin = vertices[i][0];
-        if(vertices[i][0] > xmax)	xmax = vertices[i][0];
-        if(vertices[i][1] < ymin)	ymin = vertices[i][1];
-        if(vertices[i][1] > ymax)	ymax = vertices[i][1];
-        if(vertices[i][2] < zmin)	zmin = vertices[i][2];
-        if(vertices[i][2] > zmax)	zmax = vertices[i][2];
-    }
+		fclose(fp);
+	}
+	else {
+		//Leer formato
+		fscanf(fp, "%s", buffer);
+		int aux;
 
-    for(int i = 0; i < numTriangles; i++){
-        fscanf(fp, "%d %d %d %d", &aux, &triangles[i][0], &triangles[i][1], &triangles[i][2]);
-    }
+		//Leer #vertices, #triangulos, #aristas
+		fscanf(fp, "%d %d %d", &numVertices_1, &numTriangles_1, &aux);
+		
+		for(int i = 0; i < numVertices_1; i++){
+			fscanf(fp, "%f %f %f", &vertices_1[i][0], &vertices_1[i][1], &vertices_1[i][2]);
+			if(vertices_1[i][0] < xmin)	xmin = vertices_1[i][0];
+			if(vertices_1[i][0] > xmax)	xmax = vertices_1[i][0];
+			if(vertices_1[i][1] < ymin)	ymin = vertices_1[i][1];
+			if(vertices_1[i][1] > ymax)	ymax = vertices_1[i][1];
+			if(vertices_1[i][2] < zmin)	zmin = vertices_1[i][2];
+			if(vertices_1[i][2] > zmax)	zmax = vertices_1[i][2];
+		}
 
-    fclose(fp);
+		for(int i = 0; i < numTriangles_1; i++){
+			fscanf(fp, "%d %d %d %d", &aux, &triangles_1[i][0], &triangles_1[i][1], &triangles_1[i][2]);
+		}
+
+		fclose(fp);
+	}
 }
 
 
 bool init_resources(){
 
-    read_file("NR0.off");
-
+    read_file("NR34.off", 0);
+	read_file("NR0.off", 1);
+	
     glGenBuffers(1, &vbo_object);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_object);
     glBufferData(GL_ARRAY_BUFFER, numVertices * 3 * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
@@ -79,6 +114,15 @@ bool init_resources(){
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_object);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER,
                  numTriangles * 3 * sizeof(GLushort), triangles, GL_STATIC_DRAW);
+		
+	glGenBuffers(1, &vbo_object_1);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_object_1);
+    glBufferData(GL_ARRAY_BUFFER, numVertices_1 * 3 * sizeof(GLfloat), vertices_1, GL_STATIC_DRAW);
+
+    glGenBuffers(1, &ibo_object_1);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_object_1);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                 numTriangles_1 * 3 * sizeof(GLushort), triangles_1, GL_STATIC_DRAW);
 
     GLint link_ok = GL_FALSE;
     GLuint vs, fs;
@@ -182,16 +226,31 @@ void onDisplay(){
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_object);
     glDrawElements(GL_TRIANGLES, numTriangles * 3, GL_UNSIGNED_SHORT, 0);
+	glDisableVertexAttribArray(attribute_coord);
+	
+	glEnableVertexAttribArray(attribute_coord);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_object_1);
+	glVertexAttribPointer(
+        attribute_coord,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        0, 0
+    );
+	
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_object_1);	
+    glDrawElements(GL_TRIANGLES, numTriangles_1 * 3, GL_UNSIGNED_SHORT, 0);
+	
+	glDisableVertexAttribArray(attribute_coord);
 
-
-    glDisableVertexAttribArray(attribute_coord);
+    
     glutSwapBuffers();
 }
 
 //Se le indica a opengl que se esta alterando el tamano de la ventana
 void onReshape(int w, int h){
-    screen_width = w;
-    screen_height = h;
+    screen_width = w;	
+    screen_height = h;	
 
     glViewport(0,0,screen_width, screen_height);
 }
@@ -200,6 +259,8 @@ void free_resources(){
     glDeleteProgram(program);
     glDeleteBuffers(1, &vbo_object);
     glDeleteBuffers(1, &ibo_object);
+	glDeleteBuffers(1, &vbo_object_1);
+    glDeleteBuffers(1, &ibo_object_1);
 }
 
 int main(int argc, char* argv[]){
