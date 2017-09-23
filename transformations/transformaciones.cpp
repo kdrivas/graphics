@@ -82,15 +82,15 @@ void animacion(){
 	espiral += glm::radians(1.0f);
 	
 	scene.meshes[1]->model_transform = 
-		glm::rotate(glm::mat4(1.0f), alfa, glm::vec3(0.0f, 1.0f, 0.0f)) *
-		glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 0.0f, 0.0f)) *
+		//glm::rotate(glm::mat4(1.0f), alfa, glm::vec3(0.0f, 1.0f, 0.0f)) *
+		glm::translate(glm::mat4(1.0f), glm::vec3(cos(alfa)*4.0f, 0.0f, sin(alfa)*2.5f)) *
 		glm::rotate(glm::mat4(1.0f), beta, glm::vec3(0.0f, 1.0f, 0.0f)) *
 		glm::scale(glm::mat4(1.0f), glm::vec3(0.4f, 0.4f, 0.4f));
 		
 	scene.meshes[2]->model_transform =
-		glm::rotate(glm::mat4(1.0f), alfa, glm::vec3(0.0f, 1.0f, 0.0f)) *
-		glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 0.0f, 0.0f)) *
-		glm::rotate(glm::mat4(1.0f), theta, glm::vec3(0.0f, 1.0f, 0.0f)) *
+		//glm::rotate(glm::mat4(1.0f), alfa, glm::vec3(0.0f, 1.0f, 0.0f)) *
+		glm::translate(glm::mat4(1.0f), glm::vec3(cos(alfa)*4.0f, 0.0f, sin(alfa)*2.5f)) *
+		glm::rotate(glm::mat4(0.5f), theta, glm::vec3(0.0f, 1.0f, 0.0f)) *
 		glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 0.0f)) *
 		glm::rotate(glm::mat4(1.0f), phi, glm::vec3(0.0f, 1.0f, 0.0f)) *
 		glm::scale(glm::mat4(1.0f), glm::vec3(0.1f, 0.1f, 0.1f));
@@ -98,13 +98,19 @@ void animacion(){
 	
 	
 	scene.meshes[3]->model_transform =
-		glm::rotate(glm::mat4(1.0f), gamma, glm::vec3(0.0f, 1.0f, 0.0f)) *
-		glm::translate(glm::mat4(1.0f), glm::vec3(8.0f, 0.0f, 0.0f)) *
+		//glm::rotate(glm::mat4(1.0f), gamma, glm::vec3(0.0f, 1.0f, 0.0f)) *
+		glm::translate(glm::mat4(1.0f), glm::vec3(cos(gamma)*8.0f, 0.0f, sin(gamma)*5.0f)) *
 		glm::rotate(glm::mat4(1.0f), theta, glm::vec3(0.0f, 1.0f, 0.0f)) *
 		glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)) *
 		glm::scale(glm::mat4(1.0f), glm::vec3(0.3f, 0.3f, 0.3f));
 		
-	
+	scene.meshes[4]->model_transform =
+		glm::rotate(glm::mat4(1.0f), gamma, glm::vec3(0.0f, 1.0f, 0.0f)) *
+		glm::translate(glm::mat4(1.0f), glm::vec3(tan(gamma)*8.0f, 0.0f, 0.0f)) *
+		glm::rotate(glm::mat4(1.0f), theta, glm::vec3(0.0f, 1.0f, 0.0f)) *
+		glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)) *
+		glm::scale(glm::mat4(1.0f), glm::vec3(0.3f, 0.3f, 0.3f));
+		
 	glutPostRedisplay();
 }
 
@@ -215,13 +221,15 @@ bool init_resources(){
     scene.meshes[1] = leerOFF("sphere.off"); //Tierra
     scene.meshes[2] = leerOFF("sphere.off"); //Luna
 	scene.meshes[3] = leerOFF("saturno.off"); //Saturno
+	scene.meshes[4] = leerOFF("NR0.off"); //Gato
 	
-    scene.numMeshes = 4;
+    scene.numMeshes = 5;
 
     init_buffers(scene.meshes[0]);
     init_buffers(scene.meshes[1]);
     init_buffers(scene.meshes[2]);
 	init_buffers(scene.meshes[3]);
+	init_buffers(scene.meshes[4]);
 	
     GLint link_ok = GL_FALSE;
     GLuint vs, fs;

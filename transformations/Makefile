@@ -1,6 +1,6 @@
 TARGET=transformaciones
-LIBS=-L"..\graphics\init\freeglut\lib" -lfreeglut -L"..\graphics\init\glew-1.13.0\src" -lGLEW -lglu32 -lopengl32
-CFLAGS=-I"..\graphics\init\glew-1.13.0\include" -I"..\graphics\init\freeglut\include" -I"..\graphics\init\glm-0.9.7.3\glm"
+LIBS=-L"..\init\freeglut\lib" -lfreeglut -L"..\init\glew-1.13.0\src" -lGLEW -lglu32 -lopengl32
+CFLAGS=-I"..\init\glew-1.13.0\include" -I"..\init\freeglut\include" -I"..\init\glm-0.9.7.3\glm"
 
 
 .PHONY: default all clean
